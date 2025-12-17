@@ -190,6 +190,9 @@ data class Rol(
     val descripcion: String? = null
 )
 ```
+![Pantalla ](https://raw.githubusercontent.com/GeraWest-jpg/final/main/reporte.jpg "Screen de generacion de reportes")
+
+
 
 ## 🔄 CAPA DE REPOSITORIOS
 ### Paso 3.1: LocalRepository.kt - Repositorio local de datos
