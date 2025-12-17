@@ -1,4 +1,4 @@
-<img width="381" height="823" alt="image" src="https://github.com/user-attachments/assets/d80556cf-f9f3-4448-9053-c3b74c8037b2" />
+
 # UniLost
 
 UniLost es una aplicación universitaria de gestión de objetos perdidos y encontrados que permite a estudiantes y personal del campus reportar, buscar y reclamar objetos extraviados de manera eficiente y organizada.
