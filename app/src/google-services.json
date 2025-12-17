@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "82163610758",
+    "project_id": "unilost-997c6",
+    "storage_bucket": "unilost-997c6.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:82163610758:android:ed31f8f7dde8a5210b4d07",
+        "android_client_info": {
+          "package_name": "com.unilost"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCftwNE07bcytnjMbwSoRIrSn_QA8F43fE"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
