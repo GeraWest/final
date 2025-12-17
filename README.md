@@ -22,6 +22,7 @@
 
 ### Paso 1.2: build.gradle.kts - Configuración de dependencias
 🔍 Analogía: Es como la LISTA DE PROVEEDORES Y MATERIALES para construir un edificio - especifica todo lo necesario.
+
 🎯 Función: Archivo de configuración de Gradle que define plugins, versiones del SDK, dependencias y configuraciones de compilación.
 
 ```kotlin
@@ -89,6 +90,7 @@ dependencies {
 ## 📦 CAPA DE MODELOS DE DATOS
 ### Paso 2.1: Area.kt - Modelo de área universitaria
 🔍 Analogía: Es como el PLANO DE UN EDIFICIO que identifica cada zona del campus.
+
 🎯 Función: Representa una ubicación física dentro de la universidad donde se pueden perder/encontrar objetos.
 
 ```kotlin
@@ -103,6 +105,7 @@ data class Area(
 
 ### Paso 2.2: Categoria.kt - Modelo de categoría de objetos
 🔍 Analogía: Es como el SISTEMA DE CLASIFICACIÓN de una biblioteca - organiza objetos por tipo.
+
 🎯 Función: Clasifica objetos perdidos en grupos lógicos para facilitar la búsqueda y organización.
 
 ```kotlin
@@ -132,6 +135,7 @@ data class ItemReporte(
 
 ### Paso 2.4: LostItem.kt - Modelo principal de objeto perdido
 🔍 Analogía: Es como la ETIQUETA DE IDENTIFICACIÓN que se pone a cada objeto en la oficina de perdidos.
+
 🎯 Función: Representa el concepto central de la app - un objeto perdido o encontrado en el campus.
 
 ```kotlin
@@ -152,6 +156,7 @@ data class LostItem(
 
 ### Paso 2.5: Reporte.kt - Modelo de reporte de objeto
 🔍 Analogía: Es como el REGISTRO DE INCIDENCIA en el libro de novedades.
+
 🎯 Función: Representa un reporte específico sobre un objeto perdido/encontrado.
 
 ```kotlin
@@ -168,6 +173,7 @@ data class Reporte(
 
 ### Paso 2.6: Rol.kt - Modelo de roles de usuario
 🔍 Analogía: Es como el CARNET DE IDENTIFICACIÓN con nivel de acceso en la universidad.
+
 🎯 Función: Define los diferentes tipos de usuarios y sus permisos en el sistema.
 
 ```kotlin
@@ -183,6 +189,7 @@ data class Rol(
 ## 🔄 CAPA DE REPOSITORIOS
 ### Paso 3.1: LocalRepository.kt - Repositorio local de datos
 🔍 Analogía: Es como la OFICINA DE OBJETOS PERDIDOS FÍSICA del campus.
+
 🎯 Función: Gestiona datos en memoria para desarrollo y demo, simulando una base de datos real.
 
 ```kotlin
@@ -235,6 +242,7 @@ class LocalRepository {
 ## 🧭 CAPA DE NAVEGACIÓN
 ### Paso 4.1: NavigationGraph.kt - Sistema de navegación principal
 🔍 Analogía: Es como el MAPA DE RUTAS DEL CAMPUS que muestra cómo llegar a cada edificio.
+
 🎯 Función: Define toda la estructura de navegación de la aplicación usando Jetpack Navigation 
 
 ```kotlin
@@ -387,6 +395,7 @@ fun NavigationGraph(
 ## 🎨 CAPA DE COMPONENTES UI
 ### Paso 5.1: CommonComponents.kt - Componentes reutilizables
 🔍 Analogía: Son como los MUEBLES ESTÁNDAR que se usan en todas las oficinas de la universidad.
+
 🎯 Función: Colección de componentes UI reutilizables que mantienen consistencia visual en toda la app.
 
 ```kotlin
@@ -424,6 +433,7 @@ fun SimpleCardRow(title: String, subtitle: String, onClick: () -> Unit = {}) {
 ## 📱 CAPA DE PANTALLAS (SCREENS)
 ### Paso 6.1: HomeScreen.kt - Pantalla principal
 🔍 Analogía: Es como la RECEPCIÓN PRINCIPAL de la oficina de objetos perdidos.
+
 🎯 Función: Pantalla central que da acceso a todas las funcionalidades principales de la app.
 
 ```kotlin
@@ -611,6 +621,7 @@ fun HomeScreen(
 
 ### Paso 6.2: ItemDetailScreen.kt - Pantalla de detalle de objeto
 🔍 Analogía: Es como la VITRINA DE EXHIBICIÓN donde se muestra un objeto perdido con todos sus detalles.
+
 🎯 Función: Muestra información completa de un objeto perdido/encontrado específico.
 
 ```kotlin
@@ -799,6 +810,7 @@ fun ItemDetailScreen(
 
 ### Paso 6.3: ItemsListScreen.kt - Lista de objetos
 🔍 Analogía: Es como el INVENTARIO GENERAL de la oficina de objetos perdidos.
+
 🎯 Función: Muestra lista paginada/filtrada de todos los objetos perdidos y encontrados.
 
 ```kotlin
@@ -968,6 +980,7 @@ fun ItemsListScreen(
 
 ### Paso 6.4: LoginScreen.kt - Pantalla de autenticación
 🔍 Analogía: Es como el CONTROL DE ACCESO a la oficina de objetos perdidos.
+
 🎯 Función: Permite a usuarios autenticarse en el sistema con correo institucional.
 
 ```kotlin
@@ -1109,6 +1122,7 @@ fun LoginScreen(
 
 ### Paso 6.5: NotificationsScreen.kt - Pantalla de notificaciones
 🔍 Analogía: Es como el TABLÓN DE AVISOS de la oficina de objetos perdidos.
+
 🎯 Función: Muestra notificaciones del sistema sobre objetos relacionados con el usuario.
 
 ```kotlin
@@ -1205,6 +1219,7 @@ data class NotificationItem(
 
 ### Paso 6.6: ProfileScreen.kt - Pantalla de perfil
 🔍 Analogía: Es como el CARNET DE USUARIO con foto e información personal.
+
 🎯 Función: Muestra y permite gestionar el perfil del usuario autenticado.
 
 ```kotlin
@@ -1334,6 +1349,7 @@ fun ProfileScreen(
 
 ### Paso 6.7: PublishItemScreen.kt - Publicar objeto
 🔍 Analogía: Es como el FORMULARIO DE REGISTRO para reportar un objeto perdido.
+
 🎯 Función: Permite a usuarios publicar nuevos objetos perdidos o encontrados.
 
 ```kotlin
@@ -1614,8 +1630,9 @@ fun PublishItemScreen(
 }
 ```
 
-Paso 6.8: RegisterScreen.kt - Registro de nuevo usuario
+### Paso 6.8: RegisterScreen.kt - Registro de nuevo usuario
 🔍 Analogía: Es como el FORMULARIO DE INSCRIPCIÓN para obtener carnet de la oficina.
+
 🎯 Función: Permite a nuevos usuarios crear una cuenta en el sistema.
 
 ```kotlin
@@ -1712,6 +1729,7 @@ fun RegisterScreen(
 
 ### Paso 6.9: ReportesScreen.kt - Pantalla de reportes (Admin)
 🔍 Analogía: Es como la OFICINA DE ESTADÍSTICAS que genera informes mensuales.
+
 🎯 Función: Permite a administradores generar reportes y estadísticas del sistema.
 
 ```kotlin
@@ -1962,6 +1980,7 @@ fun generarPDF(items: List<ItemReporte>, uid: String) {
 
 ### Paso 6.10: SplashScreen.kt - Pantalla de inicio
 🔍 Analogía: Es como el CARTEL DE BIENVENIDA a la entrada de la oficina.
+
 🎯 Función: Pantalla inicial que muestra logo y decide a dónde navegar basado en autenticación.
 
 ```kotlin
@@ -2008,6 +2027,7 @@ fun SplashScreen(
 ## 🧠 CAPA DE VIEWMODELS
 ### Paso 7.1: MainViewModel.kt - ViewModel principal
 🔍 Analogía: Es como el JEFE DE LA OFICINA de objetos perdidos que coordina todas las operaciones.
+
 🎯 Función: Gestiona el estado de la aplicación y la lógica de negocio central.
 
 ```kotlin
@@ -2056,6 +2076,7 @@ class MainViewModel : ViewModel() {
 ## 🏗️ CAPA DE ACTIVITY
 ### Paso 8.1: MainActivity.kt - Actividad principal
 🔍 Analogía: Es como el EDIFICIO PRINCIPAL que alberga todas las oficinas.
+
 🎯 Función: Punto de entrada de la aplicación, configura Compose y lanza el contenido.
 
 ```kotlin
