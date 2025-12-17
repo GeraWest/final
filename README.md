@@ -1,5 +1,5 @@
 
-# UniLost Mock Project (In-Memory)
+# UniLost
 
 ## 📱 FASE 1: CONFIGURACIÓN INICIAL DEL PROYECTO
 ### Paso 1.1: AndroidManifest.xml - Configuración de la aplicación
