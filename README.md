@@ -2052,7 +2052,7 @@ fun SplashScreen(
 
 
 ```
-![Pantalla Splash](https://raw.githubusercontent.com/GeraWest/final/main/splash.jpeg "Ejemplo de pantalla de la app")
+![Pantalla Splash](https://raw.githubusercontent.com/GeraWest/final/main/splashdos.jpeg "Ejemplo de pantalla de la app")
 
 
 ## 🏗️ CAPA DE ACTIVITY
