@@ -631,7 +631,7 @@ fun HomeScreen(
     }
 }
 ```
-
+![Pantalla de incio de sesion ](https://raw.githubusercontent.com/GeraWest/final/main/splash.jpeg "Ejemplo de pantalla de la app")
 
 ### Paso 6.2: ItemDetailScreen.kt - Pantalla de detalle de objeto
 🔍 Analogía: Es como la VITRINA DE EXHIBICIÓN donde se muestra un objeto perdido con todos sus detalles.
@@ -1234,8 +1234,7 @@ data class NotificationItem(
     val timestamp: Long
 )
 ```
-![Pantalla Notificaciones](https://raw.githubusercontent.com/GeraWest/final/main/noti.jpeg "Ejemplo de pantalla de la app")
-
+![Pantalla de notificaciones ](https://raw.githubusercontent.com/GeraWest/final/main/noti.jpeg "Ejemplo de pantalla de la app")
 
 ### Paso 6.6: ProfileScreen.kt - Pantalla de perfil
 🔍 Analogía: Es como el CARNET DE USUARIO con foto e información personal.
@@ -1366,7 +1365,7 @@ fun ProfileScreen(
     }
 }
 ```
-![Pantalla profile](https://raw.githubusercontent.com/GeraWest/final/main/profile.jpeg "Ejemplo de pantalla de la app")
+![Pantalla de perfil de usuarios ](https://raw.githubusercontent.com/GeraWest/final/main/profile.jpeg "Ejemplo de pantalla de la app")
 
 ### Paso 6.7: PublishItemScreen.kt - Publicar objeto
 🔍 Analogía: Es como el FORMULARIO DE REGISTRO para reportar un objeto perdido.
@@ -2001,6 +2000,10 @@ fun generarPDF(items: List<ItemReporte>, uid: String) {
 }
 ```
 ![Pantalla Reporte](https://raw.githubusercontent.com/GeraWest/final/main/reporte.jpeg "Ejemplo de pantalla de la app")
+
+![Pantalla Reporte](https://raw.githubusercontent.com/GeraWest/final/main/reportea.jpeg "Ejemplo de pantalla de la app")
+
+![Pantalla Reporte](https://raw.githubusercontent.com/GeraWest/final/main/reportee.jpeg "Ejemplo de pantalla de la app")
 
 ### Paso 6.10: SplashScreen.kt - Pantalla de inicio
 🔍 Analogía: Es como el CARTEL DE BIENVENIDA a la entrada de la oficina.
