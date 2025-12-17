@@ -175,7 +175,12 @@ data class Reporte(
     val descripcion: String? = null
 )
 ```
-![Pantalla ](https://raw.githubusercontent.com/GeraWest-jpg/final/main/reporte.jpg "Screen de generacion de reportes")
+### Resultado de la funcionalidad principal
+
+A continuación se muestra un ejemplo de cómo se ve la salida de la aplicación:
+
+![Pantalla Reporte](https://raw.githubusercontent.com/GeraWest/final/main/reporte.jpeg "Ejemplo de pantalla de la app")
+
 
 ### Paso 2.6: Rol.kt - Modelo de roles de usuario
 🔍 Analogía: Es como el CARNET DE IDENTIFICACIÓN con nivel de acceso en la universidad.
@@ -815,6 +820,7 @@ fun ItemDetailScreen(
     }
 }
 ```
+![Pantalla Detalles de objeto perdido](https://raw.githubusercontent.com/GeraWest/final/main/detalle.jpeg "Ejemplo de pantalla de la app")
 
 ### Paso 6.3: ItemsListScreen.kt - Lista de objetos
 🔍 Analogía: Es como el INVENTARIO GENERAL de la oficina de objetos perdidos.
@@ -985,6 +991,7 @@ fun ItemsListScreen(
     }
 }
 ```
+![Pantalla lista de objetos publicados perdidos](https://raw.githubusercontent.com/GeraWest/final/main/objeto.jpeg "Ejemplo de pantalla de la app")
 
 ### Paso 6.4: LoginScreen.kt - Pantalla de autenticación
 🔍 Analogía: Es como el CONTROL DE ACCESO a la oficina de objetos perdidos.
@@ -1224,6 +1231,8 @@ data class NotificationItem(
     val timestamp: Long
 )
 ```
+![Pantalla Login](https://raw.githubusercontent.com/GeraWest/final/main/login.jpeg "Ejemplo de pantalla de la app")
+
 
 ### Paso 6.6: ProfileScreen.kt - Pantalla de perfil
 🔍 Analogía: Es como el CARNET DE USUARIO con foto e información personal.
@@ -1354,6 +1363,7 @@ fun ProfileScreen(
     }
 }
 ```
+![Pantalla profile](https://raw.githubusercontent.com/GeraWest/final/main/profile.jpeg "Ejemplo de pantalla de la app")
 
 ### Paso 6.7: PublishItemScreen.kt - Publicar objeto
 🔍 Analogía: Es como el FORMULARIO DE REGISTRO para reportar un objeto perdido.
@@ -1637,6 +1647,7 @@ fun PublishItemScreen(
     }
 }
 ```
+![Pantalla Publish](https://raw.githubusercontent.com/GeraWest/final/main/publish.jpeg "Ejemplo de pantalla de la app")
 
 ### Paso 6.8: RegisterScreen.kt - Registro de nuevo usuario
 🔍 Analogía: Es como el FORMULARIO DE INSCRIPCIÓN para obtener carnet de la oficina.
@@ -1734,6 +1745,7 @@ fun RegisterScreen(
     }
 }
 ```
+![Pantalla Crear cuenta](https://raw.githubusercontent.com/GeraWest/final/main/newlogin.jpeg "Ejemplo de pantalla de la app")
 
 ### Paso 6.9: ReportesScreen.kt - Pantalla de reportes (Admin)
 🔍 Analogía: Es como la OFICINA DE ESTADÍSTICAS que genera informes mensuales.
@@ -1985,11 +1997,12 @@ fun generarPDF(items: List<ItemReporte>, uid: String) {
     pdfDocument.close()
 }
 ```
+![Pantalla Reporte](https://raw.githubusercontent.com/GeraWest/final/main/reporte.jpeg "Ejemplo de pantalla de la app")
 
 ### Paso 6.10: SplashScreen.kt - Pantalla de inicio
 🔍 Analogía: Es como el CARTEL DE BIENVENIDA a la entrada de la oficina.
 
-🎯 Función: Pantalla inicial que muestra logo y decide a dónde navegar basado en autenticación.
+🎯 Función: Pantalla inicial que muestra todas las funciones de app y decide a dónde navegar basado en autenticación.
 
 ```kotlin
 package com.unilost.ui.screens
@@ -2030,56 +2043,108 @@ fun SplashScreen(
         }
     }
 }
+
+
 ```
+![Pantalla Splash](https://raw.githubusercontent.com/GeraWest/final/main/splash.jpeg "Ejemplo de pantalla de la app")
 
-## 🧠 CAPA DE VIEWMODELS
-### Paso 7.1: MainViewModel.kt - ViewModel principal
-🔍 Analogía: Es como el JEFE DE LA OFICINA de objetos perdidos que coordina todas las operaciones.
-
-🎯 Función: Gestiona el estado de la aplicación y la lógica de negocio central.
+### Paso 6.11: Notifications.Screen.kt - Pantalla de perfil
+🔍 Analogía: Realiza notificaciones para que el usuario sepa de objetos publicados, esta funcion solo la realiza el admin 
+🎯 Función: Muestra y permite recibir notificaciones el perfil del usuario autenticado.
 
 ```kotlin
+@file:OptIn(ExperimentalMaterial3Api::class)
+package com.unilost.ui.screens
 
-package com.unilost.viewmodel
+import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.Query
 
-import androidx.lifecycle.ViewModel
-import com.unilost.data.model.LostItem
-import com.unilost.data.repository.LocalRepository
-import kotlinx.coroutines.flow.StateFlow
-import java.util.*
+private val BlueMain = Color(0xFF21527A)
+private val BlueBackground = Color(0xFFD9EAF7)
 
-class MainViewModel : ViewModel() {
-    private val repo = LocalRepository()
-    val itemsFlow: StateFlow<List<LostItem>> = repo.items
+@Composable
+fun NotificationsScreen() {
 
-    // minimal auth state (in-memory)
-    private var currentUserEmail: String? = null
-    fun register(email:String, pass:String): Boolean {
-        repo.addUser(email, pass)
-        currentUserEmail = email
-        return true
+    val firestore = FirebaseFirestore.getInstance()
+    var notifs by remember { mutableStateOf<List<NotificationItem>>(emptyList()) }
+
+    LaunchedEffect(Unit) {
+        firestore.collection("notifications")
+            .orderBy("timestamp", Query.Direction.DESCENDING)
+            .addSnapshotListener { snapshot, _ ->
+                if (snapshot != null) {
+                    notifs = snapshot.documents.mapNotNull {
+                        val text = it.getString("text") ?: return@mapNotNull null
+                        val ts = it.getLong("timestamp") ?: 0L
+                        NotificationItem(it.id, text, ts)
+                    }
+                }
+            }
     }
-    fun login(email:String, pass:String): Boolean {
-        val ok = repo.login(email, pass)
-        if (ok) currentUserEmail = email
-        return ok
-    }
-    fun logout() {
-        currentUserEmail = null
-    }
-    fun isAuthenticated() = currentUserEmail != null
-    fun currentUser() = currentUserEmail
 
-    fun publishItem(
-        name:String, desc:String?, category:String, place:String, date:String, type:String
-    ) {
-        val item = LostItem(UUID.randomUUID().toString(), name, desc, category, place, date, type, null, currentUserEmail)
-        repo.addItem(item)
+    Scaffold(
+        topBar = {
+            TopAppBar(
+                title = { Text("Notificaciones", color = Color.White, fontSize = 22.sp) },
+                colors = TopAppBarDefaults.smallTopAppBarColors(containerColor = BlueMain)
+            )
+        }
+    ) { padding ->
+
+        Box(
+            modifier = Modifier.fillMaxSize().background(BlueBackground).padding(padding),
+            contentAlignment = Alignment.Center
+        ) {
+            if (notifs.isEmpty()) {
+                Text("No hay notificaciones", color = BlueMain)
+            } else {
+                LazyColumn(modifier = Modifier.fillMaxSize().padding(16.dp)) {
+                    items(notifs) { notif ->
+                        Card(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(vertical = 6.dp)
+                                .clickable {
+                                    firestore.collection("notifications")
+                                        .document(notif.id).delete()
+                                },
+                            elevation = CardDefaults.cardElevation(6.dp)
+                        ) {
+                            Text(
+                                notif.text,
+                                modifier = Modifier.padding(16.dp),
+                                color = BlueMain,
+                                fontWeight = FontWeight.Medium
+                            )
+                        }
+                    }
+                }
+            }
+        }
     }
-    fun getItem(id:String): LostItem? = repo.findById(id)
-    fun deleteItem(id:String) = repo.deleteItem(id)
 }
+
+data class NotificationItem(
+    val id: String,
+    val text: String,
+    val timestamp: Long
+)
+
 ```
+![Pantalla Notificaciones](https://raw.githubusercontent.com/GeraWest/final/main/noti.jpeg "Ejemplo de pantalla de la app")
 
 ## 🏗️ CAPA DE ACTIVITY
 ### Paso 8.1: MainActivity.kt - Actividad principal
