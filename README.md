@@ -124,6 +124,7 @@ data class Categoria(
 
 ### Paso 2.3: ItemReporte.kt - Modelo para reportes
 🔍 Analogía: Es como la FICHA DE REPORTE que llena el guardia de seguridad cuando encuentra algo.
+
 🎯 Función: Estructura de datos específica para generar reportes administrativos.
 
 ```kotlin
