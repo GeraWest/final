@@ -1,6 +1,10 @@
 
 # UniLost
 
+UniLost es una aplicación universitaria de gestión de objetos perdidos y encontrados que permite a estudiantes y personal del campus reportar, buscar y reclamar objetos extraviados de manera eficiente y organizada.
+
+## Documentación del Proyecto
+
 ## 📱 FASE 1: CONFIGURACIÓN INICIAL DEL PROYECTO
 ### Paso 1.1: AndroidManifest.xml - Configuración de la aplicación
 🔍 Analogía: Es como el ACTA CONSTITUTIVA de una empresa - define la identidad legal, permisos y estructura básica de la app.
