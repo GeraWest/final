@@ -1,5 +1,17 @@
+# UniLost — Sistema de Objetos Perdidos
 
-# UniLost
+
+
+# 🔍 UNILOST
+
+
+
+![Android](https://img.shields.io/badge/ANDROID-34C759?style=for-the-badge&logo=android&logoColor=white)
+![Kotlin](https://img.shields.io/badge/KOTLIN-7C3AED?style=for-the-badge&logo=kotlin&logoColor=white)
+![Firebase](https://img.shields.io/badge/FIREBASE-F59E0B?style=for-the-badge&logo=firebase&logoColor=white)
+![Jetpack Compose](https://img.shields.io/badge/JETPACK%20COMPOSE-3B82F6?style=for-the-badge&logo=jetpackcompose&logoColor=white)
+
+---
 
 UniLost es una aplicación universitaria de gestión de objetos perdidos y encontrados que permite a estudiantes y personal del campus reportar, buscar y reclamar objetos extraviados de manera eficiente y organizada.
 
