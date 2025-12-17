@@ -1,18 +1,6 @@
 
 # UniLost Mock Project (In-Memory)
 
-Este proyecto contiene una implementación **mock** (en memoria) de la app UniLost, sin Firebase.
-
-- Local repository (in-memory) en `LocalRepository.kt`
-- ViewModel en `MainViewModel.kt`
-- Pantallas en `ui/screens/*`
-- Navegación en `navigation/NavigationGraph.kt`
-
-Se incluyó el manual de referencia que subiste en:  
-`/mnt/data/ControlAccesoAndroid.docx (1).pdf`
-
-> Nota: abre el proyecto en Android Studio y sincroniza Gradle. Luego ejecuta la app en un emulator/device.
-
 ## 📱 FASE 1: CONFIGURACIÓN INICIAL DEL PROYECTO
 ### Paso 1.1: AndroidManifest.xml - Configuración de la aplicación
 🔍 Analogía: Es como el ACTA CONSTITUTIVA de una empresa - define la identidad legal, permisos y estructura básica de la app.
@@ -2142,14 +2130,15 @@ class MainActivity : ComponentActivity() {
 ```
 
 ## Tecnologías clave implementadas:
-🔥 Firebase: Authentication, Firestore, Storage
 
-🎨 Jetpack Compose: UI completamente declarativa
+### 🔥 Firebase: Authentication, Firestore, Storage
 
-🧭 Navigation Compose: Navegación tipo-safe
+### 🎨 Jetpack Compose: UI completamente declarativa
 
-🔄 Coroutines: Programación asíncrona
+### 🧭 Navigation Compose: Navegación tipo-safe
 
-📄 Coil: Carga eficiente de imágenes
+### 🔄 Coroutines: Programación asíncrona
 
-📊 Material Design 3: Sistema de diseño moderno
+### 📄 Coil: Carga eficiente de imágenes
+
+### 📊 Material Design 3: Sistema de diseño moderno
