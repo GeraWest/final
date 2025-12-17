@@ -175,6 +175,7 @@ data class Reporte(
     val descripcion: String? = null
 )
 ```
+![Pantalla ](https://raw.githubusercontent.com/GeraWest-jpg/final/main/reporte.jpg "Screen de generacion de reportes")
 
 ### Paso 2.6: Rol.kt - Modelo de roles de usuario
 🔍 Analogía: Es como el CARNET DE IDENTIFICACIÓN con nivel de acceso en la universidad.
@@ -190,7 +191,6 @@ data class Rol(
     val descripcion: String? = null
 )
 ```
-![Pantalla ](https://raw.githubusercontent.com/GeraWest-jpg/final/main/reporte.jpg "Screen de generacion de reportes")
 
 
 
