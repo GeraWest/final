@@ -4,6 +4,7 @@
 ## 📱 FASE 1: CONFIGURACIÓN INICIAL DEL PROYECTO
 ### Paso 1.1: AndroidManifest.xml - Configuración de la aplicación
 🔍 Analogía: Es como el ACTA CONSTITUTIVA de una empresa - define la identidad legal, permisos y estructura básica de la app.
+
 🎯 Función: Archivo de configuración principal que declara componentes de la app, permisos requeridos y metadatos esenciales para Android.
 
 ```xml
