@@ -112,6 +112,16 @@ dependencies {
 ```kotlin
 package com.unilost.data.model
 
+/**
+ * Representa una ubicación física dentro del campus universitario.
+ * 
+ * Esta clase guarda información sobre lugares específicos donde
+ * se pueden perder o encontrar objetos en la universidad.
+ * 
+ * @property id Identificador único (generalmente el ID de Firestore)
+ * @property nombre Nombre descriptivo del área (ej: "Biblioteca")
+ * @property descripcion Información adicional (opcional)
+ */
 data class Area(
     val id: String = "",
     val nombre: String = "",
@@ -127,6 +137,16 @@ data class Area(
 ```kotlin
 package com.unilost.data.model
 
+/**
+ * Representa una categoría para clasificar objetos perdidos/encontrados.
+ * 
+ * Esta clase organiza los objetos en grupos lógicos para facilitar
+ * la búsqueda y el filtrado en la aplicación.
+ * 
+ * @property id Identificador único (generalmente el ID de Firestore)
+ * @property nombre Nombre de la categoría (ej: "Dispositivos electrónicos")
+ * @property descripcion Descripción detallada (opcional)
+ */
 data class Categoria(
     val id: String = "",
     val nombre: String = "",
@@ -142,6 +162,17 @@ data class Categoria(
 ```kotlin
 package com.unilost.data.model
 
+/**
+ * Modelo simplificado para generar reportes de objetos.
+ * 
+ * Esta clase contiene solo la información esencial necesaria
+ * para crear reportes PDF o documentos administrativos.
+ * 
+ * @property name Nombre del objeto reportado
+ * @property place Lugar donde se perdió/encontró
+ * @property date Fecha del incidente (formato: YYYY-MM-DD)
+ * @property description Descripción detallada del objeto
+ */
 data class ItemReporte(
     val name: String,
     val place: String,
@@ -158,6 +189,26 @@ data class ItemReporte(
 ```kotlin
 package com.unilost.data.model
 
+/**
+ * Modelo principal que representa un objeto perdido o encontrado en el campus.
+ * 
+ * Esta es la clase más importante de la aplicación. Representa cada
+ * objeto que los usuarios reportan como perdido o encontrado.
+ * 
+ * ESTADOS POSIBLES:
+ * - type: "Perdido" → Alguien perdió este objeto
+ * - type: "Encontrado" → Alguien encontró este objeto
+ * 
+ * @property id ID único (generalmente Firestore document ID)
+ * @property name Nombre descriptivo del objeto
+ * @property description Detalles adicionales (opcional)
+ * @property category Categoría del objeto (debe existir en Categorías)
+ * @property place Lugar donde se perdió/encontró (Área)
+ * @property date Fecha del incidente (formato: YYYY-MM-DD)
+ * @property type "Perdido" o "Encontrado"
+ * @property imagePath URL de la imagen en Firebase Storage (opcional)
+ * @property ownerId ID del usuario que reportó el objeto (opcional)
+ */
 data class LostItem(
     val id: String,
     val name: String,
