@@ -2222,9 +2222,10 @@ fun SplashScreen(
 ```
 ![Pantalla Splash](https://raw.githubusercontent.com/GeraWest/final/main/splashdos.jpeg "Ejemplo de pantalla de la app")
 
-"" 🧠 CAPA DE VIEWMODELS
-""" Paso 7.1: MainViewModel.kt - ViewModel principal
+## 🧠 CAPA DE VIEWMODELS
+###  Paso 7.1: MainViewModel.kt - ViewModel principal
 🔍 Analogía: Es como el JEFE DE LA OFICINA de objetos perdidos que coordina todas las operaciones.
+
 🎯 Función: Gestiona el estado de la aplicación y la lógica de negocio central.
 
 ```kotlin
