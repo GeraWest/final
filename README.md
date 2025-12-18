@@ -1819,7 +1819,100 @@ fun PublishItemScreen(
 🎯 Función: Permite a nuevos usuarios crear una cuenta en el sistema.
 
 ```kotlin
+@file:OptIn(ExperimentalMaterial3Api::class)
 
+package com.unilost.ui.screens
+
+import androidx.compose.foundation.layout.*
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
+import com.google.firebase.auth.FirebaseAuth
+
+/**
+ * Pantalla que permite a nuevos usuarios crear una cuenta en el sistema.
+ * Valida el formato del correo y la longitud mínima de la contraseña.
+ * Utiliza Firebase Authentication para registrar usuarios.
+ */
+@Composable
+fun RegisterScreen(
+    onRegisterSuccess: () -> Unit
+) {
+    var email by remember { mutableStateOf("") }
+    var pass by remember { mutableStateOf("") }
+    var error by remember { mutableStateOf<String?>(null) }
+    var loading by remember { mutableStateOf(false) }
+
+    val auth = FirebaseAuth.getInstance()
+
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(20.dp),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Center
+    ) {
+
+        Text("Crear cuenta", style = MaterialTheme.typography.headlineSmall)
+        Spacer(Modifier.height(12.dp))
+
+        OutlinedTextField(
+            value = email,
+            onValueChange = { email = it },
+            label = { Text("Correo institucional") },
+            singleLine = true,
+            modifier = Modifier.fillMaxWidth()
+        )
+
+        Spacer(Modifier.height(8.dp))
+
+        OutlinedTextField(
+            value = pass,
+            onValueChange = { pass = it },
+            label = { Text("Contraseña (min 6)") },
+            singleLine = true,
+            modifier = Modifier.fillMaxWidth()
+        )
+
+        Spacer(Modifier.height(12.dp))
+
+        Button(
+            onClick = {
+                error = null
+
+                if (email.isBlank() || pass.length < 6) {
+                    error = "Email inválido o contraseña mínima de 6 caracteres"
+                    return@Button
+                }
+
+                loading = true
+
+                auth.createUserWithEmailAndPassword(email, pass)
+                    .addOnSuccessListener {
+                        loading = false
+                        onRegisterSuccess()
+                    }
+                    .addOnFailureListener { e ->
+                        loading = false
+                        error = e.message ?: "Error al registrar"
+                    }
+            },
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            Text("Registrar")
+        }
+
+        error?.let {
+            Text(
+                it,
+                color = MaterialTheme.colorScheme.error,
+                modifier = Modifier.padding(top = 8.dp)
+            )
+        }
+    }
+}
 ```
 ![Pantalla Crear cuenta](https://raw.githubusercontent.com/GeraWest/final/main/newlogin.jpeg "Ejemplo de pantalla de la app")
 
@@ -1851,13 +1944,13 @@ import java.io.FileOutputStream
 import java.text.SimpleDateFormat
 import java.util.*
 
-// 🎨 Colores
 private val BlueMain = Color(0xFF21527A)
 private val BlueBackground = Color(0xFFD9EAF7)
 
-/* =======================
-   MODELO DE DATOS
-   ======================= */
+/**
+ * Modelo de datos simplificado para generar reportes.
+ * Contiene la información esencial de cada objeto para el reporte PDF.
+ */
 data class ItemReporte(
     val name: String,
     val place: String,
@@ -1865,6 +1958,11 @@ data class ItemReporte(
     val description: String
 )
 
+/**
+ * Pantalla exclusiva para administradores que permite generar reportes PDF
+ * con todos los objetos registrados en el sistema.
+ * Incluye validación de rol y generación de documentos en tiempo real.
+ */
 @Composable
 fun ReportesScreen() {
 
@@ -1875,9 +1973,6 @@ fun ReportesScreen() {
     var loading by remember { mutableStateOf(false) }
     var mensaje by remember { mutableStateOf<String?>(null) }
 
-    /* =======================
-       VERIFICAR ROL
-       ======================= */
     LaunchedEffect(Unit) {
         val uid = auth.currentUser?.uid ?: return@LaunchedEffect
         firestore.collection("roles")
@@ -1888,9 +1983,6 @@ fun ReportesScreen() {
             }
     }
 
-    /* =======================
-       BLOQUEO NO ADMIN
-       ======================= */
     if (role != "admin") {
         Box(
             modifier = Modifier
@@ -1908,9 +2000,6 @@ fun ReportesScreen() {
         return
     }
 
-    /* =======================
-       UI PRINCIPAL
-       ======================= */
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -1996,9 +2085,11 @@ fun ReportesScreen() {
     }
 }
 
-/* =======================
-   GENERADOR DE PDF
-   ======================= */
+/**
+ * Genera un documento PDF con la lista de objetos proporcionada.
+ * El PDF incluye encabezado, información del generador y lista detallada.
+ * Se guarda automáticamente en la carpeta de descargas del dispositivo.
+ */
 fun generarPDF(items: List<ItemReporte>, uid: String) {
 
     val pdfDocument = PdfDocument()
@@ -2101,6 +2192,11 @@ import kotlinx.coroutines.delay
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.unilost.viewmodel.MainViewModel
 
+/**
+ * Pantalla inicial que se muestra al abrir la aplicación.
+ * Incluye una animación de entrada y verifica el estado de autenticación
+ * para decidir a qué pantalla navegar a continuación.
+ */
 @Composable
 fun SplashScreen(
     viewModel: MainViewModel = viewModel(),
@@ -2123,11 +2219,98 @@ fun SplashScreen(
         }
     }
 }
-
-
 ```
 ![Pantalla Splash](https://raw.githubusercontent.com/GeraWest/final/main/splashdos.jpeg "Ejemplo de pantalla de la app")
 
+"" 🧠 CAPA DE VIEWMODELS
+""" Paso 7.1: MainViewModel.kt - ViewModel principal
+🔍 Analogía: Es como el JEFE DE LA OFICINA de objetos perdidos que coordina todas las operaciones.
+🎯 Función: Gestiona el estado de la aplicación y la lógica de negocio central.
+
+```kotlin
+package com.unilost.viewmodel
+
+import androidx.lifecycle.ViewModel
+import com.unilost.data.model.LostItem
+import com.unilost.data.repository.LocalRepository
+import kotlinx.coroutines.flow.StateFlow
+import java.util.*
+
+/**
+ * ViewModel principal que gestiona el estado de la aplicación y
+ * coordina las operaciones entre la interfaz de usuario y el repositorio.
+ * Implementa la lógica de negocio para autenticación y gestión de objetos.
+ */
+class MainViewModel : ViewModel() {
+    private val repo = LocalRepository()
+    val itemsFlow: StateFlow<List<LostItem>> = repo.items
+
+    // minimal auth state (in-memory)
+    private var currentUserEmail: String? = null
+    
+    /**
+     * Registra un nuevo usuario en el sistema.
+     * @return Siempre retorna true ya que no hay validaciones complejas en esta implementación.
+     */
+    fun register(email:String, pass:String): Boolean {
+        repo.addUser(email, pass)
+        currentUserEmail = email
+        return true
+    }
+    
+    /**
+     * Autentica a un usuario existente.
+     * @return true si las credenciales son válidas, false en caso contrario.
+     */
+    fun login(email:String, pass:String): Boolean {
+        val ok = repo.login(email, pass)
+        if (ok) currentUserEmail = email
+        return ok
+    }
+    
+    /**
+     * Cierra la sesión del usuario actual.
+     * Limpia el estado de autenticación en memoria.
+     */
+    fun logout() {
+        currentUserEmail = null
+    }
+    
+    /**
+     * Verifica si hay un usuario autenticado.
+     * @return true si existe un usuario logueado, false en caso contrario.
+     */
+    fun isAuthenticated() = currentUserEmail != null
+    
+    /**
+     * Obtiene el email del usuario actualmente autenticado.
+     * @return Email del usuario o null si no hay sesión activa.
+     */
+    fun currentUser() = currentUserEmail
+
+    /**
+     * Publica un nuevo objeto perdido o encontrado.
+     * Crea un LostItem con ID único y lo agrega al repositorio.
+     */
+    fun publishItem(
+        name:String, desc:String?, category:String, place:String, date:String, type:String
+    ) {
+        val item = LostItem(UUID.randomUUID().toString(), name, desc, category, place, date, type, null, currentUserEmail)
+        repo.addItem(item)
+    }
+    
+    /**
+     * Busca un LostItem por su ID.
+     * @return El objeto encontrado o null si no existe.
+     */
+    fun getItem(id:String): LostItem? = repo.findById(id)
+    
+    /**
+     * Elimina un LostItem del repositorio por su ID.
+     */
+    fun deleteItem(id:String) = repo.deleteItem(id)
+}
+```
 
 ## 🏗️ CAPA DE ACTIVITY
 ### Paso 8.1: MainActivity.kt - Actividad principal
@@ -2150,6 +2333,11 @@ import androidx.compose.material3.Surface
 import androidx.compose.ui.Modifier
 import com.google.firebase.FirebaseApp
 
+/**
+ * Actividad principal que sirve como punto de entrada único de la aplicación.
+ * Configura Firebase, inicializa el tema y establece el contenido Compose.
+ * Implementa arquitectura Single Activity con múltiples pantallas en Compose.
+ */
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
