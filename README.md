@@ -209,6 +209,7 @@ package com.unilost.data.model
  * @property imagePath URL de la imagen en Firebase Storage (opcional)
  * @property ownerId ID del usuario que reportó el objeto (opcional)
  */
+
 data class LostItem(
     val id: String,
     val name: String,
@@ -230,10 +231,24 @@ data class LostItem(
 ```kotlin
 package com.unilost.data.model
 
+/**
+ * Modelo que representa un reporte o registro de incidencia sobre un objeto.
+ * 
+ * Esta clase guarda el historial de reportes realizados sobre objetos.
+ * Cada vez que alguien reporta un objeto perdido o encontrado, se crea
+ * un registro Reporte que queda vinculado al objeto.
+ * 
+ * @property id ID único del reporte (Firestore document ID)
+ * @property itemId Referencia al ID del objeto relacionado (LostItem.id)
+ * @property tipo Tipo de reporte: "Perdido" o "Encontrado"
+ * @property fecha Fecha del reporte (formato: YYYY-MM-DD)
+ * @property descripcion Descripción adicional del reporte (opcional)
+ */
+
 data class Reporte(
     val id: String = "",
-    val itemId: String = "",       // referencia a LostItem.id
-    val tipo: String = "",         // Perdido / Encontrado
+    val itemId: String = "",      
+    val tipo: String = "",       
     val fecha: String = "",
     val descripcion: String? = null
 )
@@ -252,6 +267,17 @@ A continuación se muestra un ejemplo de cómo se ve la salida de la aplicación
 
 ```kotlin
 package com.unilost.data.model
+
+/**
+ * Modelo que define los roles y permisos de los usuarios en el sistema.
+ * 
+ * Esta clase controla qué puede hacer cada tipo de usuario en la aplicación.
+ * Los roles determinan el acceso a diferentes funcionalidades y pantallas.
+ * 
+ * @property id ID único del rol (Firestore document ID)
+ * @property nombre Nombre del rol: "ADMIN" o "USUARIO"
+ * @property descripcion Descripción de los permisos (opcional)
+ */
 
 data class Rol(
     val id: String = "",
@@ -276,37 +302,69 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import java.util.*
 
+/**
+ * Implementación de repositorio local que almacena datos en memoria.
+ * Utiliza StateFlows para observar cambios en los datos.
+ * Diseñado para desarrollo y testing sin dependencia de Firebase.
+ */
 class LocalRepository {
     private val _items = MutableStateFlow<List<LostItem>>(sample())
     val items: StateFlow<List<LostItem>> = _items
 
     private val users = mutableMapOf<String, String>() // email -> password (demo only)
 
+    /**
+     * Registra un nuevo usuario con email y contraseña.
+     * Los datos se almacenan temporalmente en memoria.
+     */
     fun addUser(email: String, password: String) {
         users[email] = password
     }
 
+    /**
+     * Verifica credenciales de usuario comparando con datos almacenados.
+     * Retorna true si las credenciales son válidas.
+     */
     fun login(email: String, password: String): Boolean {
         return users[email] == password
     }
 
+    /**
+     * Agrega un nuevo LostItem al inicio de la lista.
+     * Actualiza automáticamente el StateFlow para notificar observadores.
+     */
     fun addItem(item: LostItem) {
         val list = _items.value.toMutableList()
         list.add(0, item)
         _items.value = list
     }
 
+    /**
+     * Actualiza un LostItem existente identificado por su ID.
+     * Reemplaza el item antiguo con el nuevo en la lista.
+     */
     fun updateItem(updated: LostItem) {
         _items.value = _items.value.map { if (it.id == updated.id) updated else it }
     }
 
+    /**
+     * Elimina un LostItem de la lista filtrando por ID.
+     */
     fun deleteItem(id: String) {
         _items.value = _items.value.filter { it.id != id }
     }
 
+    /**
+     * Busca un LostItem por su ID.
+     * Retorna el item si existe, null en caso contrario.
+     */
     fun findById(id: String): LostItem? = _items.value.find { it.id == id }
 
     companion object {
+        /**
+         * Genera datos de ejemplo para inicializar el repositorio.
+         * Proporciona items de demostración para desarrollo.
+         */
         private fun sample() = listOf(
             LostItem(UUID.randomUUID().toString(),"Mochila negra","Mochila con distintivo rojo","Mochilas","Aula 1","2025-11-01","Perdido", null,"u1"),
             LostItem(UUID.randomUUID().toString(),"Llaves","Llavero con etiqueta azul","Llaves","Biblioteca","2025-10-20","Encontrado", null,"u2")
@@ -342,11 +400,12 @@ import com.unilost.ui.screens.ItemDetailScreen
 import com.unilost.ui.screens.PublishItemScreen
 import com.unilost.ui.screens.NotificationsScreen
 import com.unilost.ui.screens.ProfileScreen
-import com.unilost.ui.screens.ReportesScreen   // 👈 NUEVO
+import com.unilost.ui.screens.ReportesScreen
 
-// -------------------------
-// Pantallas / Rutas
-// -------------------------
+/**
+ * Define las rutas de navegación disponibles en la aplicación.
+ * Cada Screen corresponde a una pantalla específica.
+ */
 sealed class Screen(val route: String) {
     object Splash : Screen("splash")
     object Login : Screen("login")
@@ -354,17 +413,24 @@ sealed class Screen(val route: String) {
     object Home : Screen("home")
     object List : Screen("list")
     object Detail : Screen("detail/{id}") {
+        /**
+         * Crea la ruta completa con el ID del objeto como parámetro.
+         */
         fun create(id: String) = "detail/$id"
     }
     object Publish : Screen("publish")
     object Notifications : Screen("notifications")
     object Profile : Screen("profile")
-    object Reportes : Screen("reportes") // 👈 NUEVO
+    object Reportes : Screen("reportes")
 }
 
-// -------------------------
-// Navigation Graph
-// -------------------------
+/**
+ * Configura y gestiona la navegación principal de la aplicación.
+ * Define cómo se conectan todas las pantallas entre sí.
+ * 
+ * @param navController Controlador de navegación que maneja el stack de pantallas.
+ * @param startDestination Ruta inicial al iniciar la aplicación.
+ */
 @Composable
 fun NavigationGraph(
     navController: NavHostController = rememberNavController(),
@@ -414,7 +480,7 @@ fun NavigationGraph(
                 onOpenPublish = { navController.navigate(Screen.Publish.route) },
                 onOpenNotifications = { navController.navigate(Screen.Notifications.route) },
                 onOpenProfile = { navController.navigate(Screen.Profile.route) },
-                onOpenReportes = { navController.navigate(Screen.Reportes.route) } // 👈 NUEVO
+                onOpenReportes = { navController.navigate(Screen.Reportes.route) }
             )
         }
 
@@ -460,7 +526,6 @@ fun NavigationGraph(
             )
         }
 
-        // 🧾 REPORTES (ADMIN)
         composable(Screen.Reportes.route) {
             ReportesScreen()
         }
@@ -475,7 +540,6 @@ fun NavigationGraph(
 🎯 Función: Colección de componentes UI reutilizables que mantienen consistencia visual en toda la app.
 
 ```kotlin
-
 package com.unilost.ui.components
 
 import androidx.compose.foundation.clickable
@@ -485,11 +549,26 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 
+/**
+ * Muestra un título de pantalla con estilo consistente.
+ * Aplica padding estándar y utiliza la tipografía headlineSmall del tema.
+ * 
+ * @param title Texto del título a mostrar.
+ */
 @Composable
 fun ScreenTitle(title: String) {
     Text(title, style = MaterialTheme.typography.headlineSmall, modifier = Modifier.padding(8.dp))
 }
 
+/**
+ * Componente de tarjeta simple con título y subtítulo.
+ * Diseñado para mostrar elementos en listas de manera consistente.
+ * Incluye comportamiento clickable y padding predefinido.
+ * 
+ * @param title Texto principal de la tarjeta.
+ * @param subtitle Texto secundario o descripción.
+ * @param onClick Callback ejecutado al hacer click en la tarjeta.
+ */
 @Composable
 fun SimpleCardRow(title: String, subtitle: String, onClick: () -> Unit = {}) {
     Card(modifier = Modifier
@@ -532,16 +611,18 @@ import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-
-// 🔥 IMPORTS QUE FALTABAN
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 
-// 🎨 Paleta de colores
 private val BlueMain = Color(0xFF21527A)
 private val BlueLight = Color(0xFF3A6D9A)
 private val BlueBackground = Color(0xFFD9EAF7)
 
+/**
+ * Pantalla principal que sirve como dashboard de la aplicación.
+ * Proporciona navegación a todas las funcionalidades principales.
+ * Incluye una barra de navegación inferior y secciones de acciones.
+ */
 @Composable
 fun HomeScreen(
     onOpenList: () -> Unit,
@@ -556,7 +637,6 @@ fun HomeScreen(
     val firestore = FirebaseFirestore.getInstance()
     val auth = FirebaseAuth.getInstance()
 
-    // 🔐 Verificar rol (solo admin ve reportes)
     LaunchedEffect(Unit) {
         val uid = auth.currentUser?.uid ?: return@LaunchedEffect
         firestore.collection("roles")
@@ -609,7 +689,6 @@ fun HomeScreen(
                 .padding(20.dp)
         ) {
 
-            // 🔵 ENCABEZADO
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -636,7 +715,6 @@ fun HomeScreen(
 
             Spacer(Modifier.height(25.dp))
 
-            // 🔲 TARJETA DE ACCIONES
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -675,7 +753,6 @@ fun HomeScreen(
                         Text("Publicar un objeto", color = BlueMain)
                     }
 
-                    // 🧾 SOLO ADMIN
                     if (role == "admin") {
                         Spacer(Modifier.height(16.dp))
 
@@ -720,11 +797,15 @@ import androidx.compose.ui.unit.dp
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 
-// 🎨 Paleta azul profesional
 private val BlueMain = Color(0xFF21527A)
 private val BlueLight = Color(0xFF3A6D9A)
 private val BlueBackground = Color(0xFFE6F0FA)
 
+/**
+ * Pantalla que muestra todos los detalles de un objeto específico.
+ * Incluye información como nombre, área, fecha y descripción.
+ * Los administradores tienen acceso a información adicional y opciones extra.
+ */
 @Composable
 fun ItemDetailScreen(
     id: String,
@@ -737,7 +818,6 @@ fun ItemDetailScreen(
     var loading by remember { mutableStateOf(true) }
     var role by remember { mutableStateOf("user") }
 
-    // 🔐 Obtener rol
     LaunchedEffect(Unit) {
         val uid = auth.currentUser?.uid ?: return@LaunchedEffect
         firestore.collection("roles").document(uid)
@@ -747,7 +827,6 @@ fun ItemDetailScreen(
             }
     }
 
-    // 📦 Obtener item
     LaunchedEffect(id) {
         firestore.collection("items").document(id)
             .get()
@@ -796,7 +875,7 @@ fun ItemDetailScreen(
         item?.let { it ->
 
             val name = it["name"]?.toString() ?: ""
-            val area = it["area"]?.toString() ?: ""   // ✅ CORREGIDO
+            val area = it["area"]?.toString() ?: ""
             val date = it["date"]?.toString() ?: ""
             val desc = it["description"]?.toString() ?: "-"
             val ownerId = it["ownerId"]?.toString() ?: ""
@@ -809,7 +888,6 @@ fun ItemDetailScreen(
                     .padding(16.dp)
             ) {
 
-                // 📌 Tarjeta del objeto
                 Card(
                     modifier = Modifier.fillMaxWidth(),
                     colors = CardDefaults.cardColors(containerColor = Color.White),
@@ -837,7 +915,6 @@ fun ItemDetailScreen(
 
                         Spacer(Modifier.height(12.dp))
 
-                        // 🔒 SOLO ADMINS ven la descripción
                         if (role == "admin") {
                             Text(
                                 "Descripción:",
@@ -856,7 +933,6 @@ fun ItemDetailScreen(
 
                 Spacer(Modifier.height(20.dp))
 
-                // 🗑️ Eliminar (solo admin o dueño)
                 if (role == "admin" || ownerId == auth.currentUser?.uid) {
                     OutlinedButton(
                         onClick = {
@@ -915,11 +991,14 @@ import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.ListenerRegistration
 import com.google.firebase.firestore.Query
 
-// 🎨 Paleta unificada
 private val BlueMain = Color(0xFF21527A)
 private val BlueLight = Color(0xFF3A6D9A)
 private val BlueBackground = Color(0xFFD9EAF7)
 
+/**
+ * Modelo simplificado para mostrar items en la lista.
+ * Contiene solo la información esencial necesaria para la vista previa.
+ */
 data class ItemModel(
     val id: String = "",
     val name: String = "Sin nombre",
@@ -927,6 +1006,11 @@ data class ItemModel(
     val date: String = "Fecha desconocida"
 )
 
+/**
+ * Pantalla que muestra una lista de todos los objetos publicados.
+ * Los items se actualizan en tiempo real desde Firestore.
+ * Incluye un botón flotante para publicar nuevos objetos (solo admin).
+ */
 @Composable
 fun ItemsListScreen(
     onOpenDetail: (String) -> Unit,
@@ -937,9 +1021,8 @@ fun ItemsListScreen(
 
     var items by remember { mutableStateOf<List<ItemModel>>(emptyList()) }
     var errorMessage by remember { mutableStateOf<String?>(null) }
-    var role by remember { mutableStateOf("user") } // Estado para el rol
+    var role by remember { mutableStateOf("user") }
 
-    // ░░ Obtener rol del usuario
     LaunchedEffect(Unit) {
         val uid = auth.currentUser?.uid ?: return@LaunchedEffect
         firestore.collection("roles").document(uid)
@@ -949,7 +1032,6 @@ fun ItemsListScreen(
             }
     }
 
-    // ░░ Firestore Listener para items
     DisposableEffect(Unit) {
         val registration: ListenerRegistration = firestore.collection("items")
             .orderBy("timestamp", Query.Direction.DESCENDING)
@@ -973,7 +1055,6 @@ fun ItemsListScreen(
         onDispose { registration.remove() }
     }
 
-    // ░░ UI ░░
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -982,7 +1063,6 @@ fun ItemsListScreen(
 
         Column(modifier = Modifier.fillMaxSize()) {
 
-            // ⭐ Título
             Text(
                 "Objetos publicados",
                 modifier = Modifier
@@ -993,7 +1073,6 @@ fun ItemsListScreen(
                 fontWeight = FontWeight.ExtraBold
             )
 
-            // ⭐ Mensaje de error
             errorMessage?.let {
                 Text(
                     text = it,
@@ -1004,7 +1083,6 @@ fun ItemsListScreen(
                 )
             }
 
-            // ⭐ LISTA DE TARJETAS
             LazyColumn(
                 modifier = Modifier
                     .fillMaxSize()
@@ -1026,7 +1104,6 @@ fun ItemsListScreen(
                     ) {
                         Column(modifier = Modifier.padding(18.dp)) {
 
-                            // ⭐ Solo nombre del objeto
                             Text(
                                 text = item.name,
                                 fontSize = 20.sp,
@@ -1039,7 +1116,6 @@ fun ItemsListScreen(
             }
         }
 
-        // ⭐ FAB solo visible si es admin
         if (role == "admin") {
             FloatingActionButton(
                 onClick = onOpenPublish,
@@ -1084,11 +1160,15 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.unilost.viewmodel.MainViewModel
 import com.google.firebase.auth.FirebaseAuth
 
-// 🎨 Paleta basada en #21527A
 private val BlueMain = Color(0xFF21527A)
 private val BlueLight = Color(0xFF3A6D9A)
 private val BlueBackground = Color(0xFFD9EAF7)
 
+/**
+ * Pantalla de autenticación que permite a los usuarios iniciar sesión
+ * con su correo institucional y contraseña.
+ * Integra Firebase Authentication para validar credenciales.
+ */
 @Composable
 fun LoginScreen(
     viewModel: MainViewModel = viewModel(),
@@ -1229,6 +1309,20 @@ import com.google.firebase.firestore.Query
 private val BlueMain = Color(0xFF21527A)
 private val BlueBackground = Color(0xFFD9EAF7)
 
+/**
+ * Modelo que representa una notificación en el sistema.
+ */
+data class NotificationItem(
+    val id: String,
+    val text: String,
+    val timestamp: Long
+)
+
+/**
+ * Pantalla que muestra todas las notificaciones del usuario.
+ * Las notificaciones se obtienen en tiempo real desde Firestore.
+ * Permite eliminar notificaciones individuales al hacer clic.
+ */
 @Composable
 fun NotificationsScreen() {
 
@@ -1290,12 +1384,6 @@ fun NotificationsScreen() {
         }
     }
 }
-
-data class NotificationItem(
-    val id: String,
-    val text: String,
-    val timestamp: Long
-)
 ```
 ![Pantalla de notificaciones ](https://raw.githubusercontent.com/GeraWest/final/main/noti.jpeg "Ejemplo de pantalla de la app")
 
@@ -1333,6 +1421,12 @@ import com.google.firebase.auth.FirebaseAuth
 
 private val BlueMain = Color(0xFF21527A)
 private val BlueBackground = Color(0xFFE6F0FA)
+
+/**
+ * Pantalla que muestra y permite gestionar el perfil del usuario.
+ * Incluye funcionalidad para cambiar foto de perfil y cerrar sesión.
+ * Muestra información del usuario obtenida de Firebase Authentication.
+ */
 
 @Composable
 fun ProfileScreen(
@@ -1456,6 +1550,11 @@ import com.google.firebase.firestore.Query
 private val BlueMain = Color(0xFF21527A)
 private val BlueBackground = Color(0xFFD9EAF7)
 
+/**
+ * Pantalla que permite a los administradores publicar nuevos objetos
+ * perdidos o encontrados en el sistema.
+ * Incluye un formulario completo con validaciones y selección de categorías/áreas.
+ */
 @Composable
 fun PublishItemScreen(
     onPublished: () -> Unit
@@ -1720,95 +1819,7 @@ fun PublishItemScreen(
 🎯 Función: Permite a nuevos usuarios crear una cuenta en el sistema.
 
 ```kotlin
-@file:OptIn(ExperimentalMaterial3Api::class)
 
-package com.unilost.ui.screens
-
-import androidx.compose.foundation.layout.*
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
-import androidx.compose.ui.Alignment
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.unit.dp
-import com.google.firebase.auth.FirebaseAuth
-
-@Composable
-fun RegisterScreen(
-    onRegisterSuccess: () -> Unit
-) {
-    var email by remember { mutableStateOf("") }
-    var pass by remember { mutableStateOf("") }
-    var error by remember { mutableStateOf<String?>(null) }
-    var loading by remember { mutableStateOf(false) }
-
-    val auth = FirebaseAuth.getInstance()
-
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(20.dp),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center
-    ) {
-
-        Text("Crear cuenta", style = MaterialTheme.typography.headlineSmall)
-        Spacer(Modifier.height(12.dp))
-
-        OutlinedTextField(
-            value = email,
-            onValueChange = { email = it },
-            label = { Text("Correo institucional") },
-            singleLine = true,
-            modifier = Modifier.fillMaxWidth()
-        )
-
-        Spacer(Modifier.height(8.dp))
-
-        OutlinedTextField(
-            value = pass,
-            onValueChange = { pass = it },
-            label = { Text("Contraseña (min 6)") },
-            singleLine = true,
-            modifier = Modifier.fillMaxWidth()
-        )
-
-        Spacer(Modifier.height(12.dp))
-
-        Button(
-            onClick = {
-                error = null
-
-                if (email.isBlank() || pass.length < 6) {
-                    error = "Email inválido o contraseña mínima de 6 caracteres"
-                    return@Button
-                }
-
-                loading = true
-
-                auth.createUserWithEmailAndPassword(email, pass)
-                    .addOnSuccessListener {
-                        loading = false
-                        onRegisterSuccess()
-                    }
-                    .addOnFailureListener { e ->
-                        loading = false
-                        error = e.message ?: "Error al registrar"
-                    }
-            },
-            modifier = Modifier.fillMaxWidth()
-        ) {
-            Text("Registrar")
-        }
-
-        error?.let {
-            Text(
-                it,
-                color = MaterialTheme.colorScheme.error,
-                modifier = Modifier.padding(top = 8.dp)
-            )
-        }
-    }
-}
 ```
 ![Pantalla Crear cuenta](https://raw.githubusercontent.com/GeraWest/final/main/newlogin.jpeg "Ejemplo de pantalla de la app")
 
